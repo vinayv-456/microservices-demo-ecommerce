@@ -3,7 +3,7 @@ version: '3.8'
 services:
   # Service Discovery (Eureka Server)
   service-discovery:
-    image: service-discovery:latest
+    image: registry.hub.docker.com/vinayv456/service-discovery:latest
     container_name: service-discovery
     ports:
       - "8761:8761"
@@ -17,6 +17,42 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+
+  # Product Service
+  product-service:
+    image: registry.hub.docker.com/vinayv456/product-service:latest
+    container_name: product-service
+    ports:
+      - "8081:8081"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-discovery:8761/eureka/
+      - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/product-service
+      - SERVER_PORT=8081
+    networks:
+      - microservices-network
+    depends_on:
+      - service-discovery
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 40s
+
+  # MongoDB Config for product service
+  mongo:
+    container_name: mongo
+    image: mongo:latest
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    expose:
+      - "27017"
+    volumes:
+      - ./mongo-data:/data/db
+    networks:
+      - microservices-network
+
 
 networks:
   microservices-network:
