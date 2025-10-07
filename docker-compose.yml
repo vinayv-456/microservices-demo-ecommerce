@@ -38,6 +38,28 @@ services:
     #   timeout: 10s
     #   retries: 3
     #   start_period: 40s
+  # Inventory Service Config
+  inventory-service:
+    container_name: inventory-service
+    image: registry.hub.docker.com/vinayv456/inventory-service:latest
+    pull_policy: always
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-inventory:3306/inventory_service?allowPublicKeyRetrieval=true&useSSL=false
+      - SPRING_DATASOURCE_USERNAME=vinay
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SERVER_PORT=8080
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-discovery:8761/eureka/
+      # - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://zipkin:9411/api/v2/spans
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - microservices-network
+    depends_on:
+      - mysql-inventory
+      # - zipkin
+      - service-discovery
+      # - api-gateway
 
   # MongoDB Config for product service
   mongo:
@@ -53,6 +75,22 @@ services:
     networks:
       - microservices-network
 
+  # MySQL Config for inventory service
+  mysql-inventory:
+    container_name: mysql-inventory
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: inventory_service
+      MYSQL_USER: vinay
+      MYSQL_PASSWORD: password
+    volumes:
+      - ./mysql_inventory:/var/lib/mysql
+    ports:
+      - "3308:3306"
+    restart: always
+    networks:
+      - microservices-network
 
 networks:
   microservices-network:
