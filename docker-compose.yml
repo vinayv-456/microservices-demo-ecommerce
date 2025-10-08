@@ -86,7 +86,22 @@ services:
       # - zipkin
       - service-discovery
       # - api-gateway
-
+  
+  api-gateway:
+    image: registry.hub.docker.com/vinayv456/api-gateway:latest
+    container_name: api-gateway
+    pull_policy: always
+    ports:
+      - "8181:8080"
+    expose:
+      - "8181"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-discovery:8761/eureka
+      - SERVER_PORT=8080
+    depends_on:
+      - service-discovery
+    networks:
+      - microservices-network
 
   # MongoDB Config for product service
   mongo:
