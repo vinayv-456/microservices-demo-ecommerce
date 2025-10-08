@@ -1,6 +1,7 @@
 # Database data directories
 /mongo-data
 /mysql_inventory
+/mysql_order
 
 # Maven build output
 /target/
