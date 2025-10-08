@@ -2,6 +2,7 @@
 /mongo-data
 /mysql_inventory
 /mysql_order
+/mysql_keycloak_data
 
 # Maven build output
 /target/
