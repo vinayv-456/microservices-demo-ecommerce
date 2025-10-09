@@ -7,8 +7,6 @@ services:
     container_name: service-discovery
     ports:
       - "8761:8761"
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
     networks:
       - microservices-network
     healthcheck:
@@ -44,15 +42,14 @@ services:
     image: registry.hub.docker.com/vinayv456/inventory-service:latest
     pull_policy: always
     ports:
-      - "8083:8080"
+      - "8083:8083"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-inventory:3306/inventory_service?allowPublicKeyRetrieval=true&useSSL=false
       - SPRING_DATASOURCE_USERNAME=vinay
       - SPRING_DATASOURCE_PASSWORD=password
-      - SERVER_PORT=8080
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-discovery:8761/eureka/
+      - SERVER_PORT=8083
       # - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://zipkin:9411/api/v2/spans
-      - SPRING_PROFILES_ACTIVE=docker
     networks:
       - microservices-network
     depends_on:
@@ -71,8 +68,8 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-order:3306/order_service?allowPublicKeyRetrieval=true&useSSL=false
       - SPRING_DATASOURCE_USERNAME=vinay
       - SPRING_DATASOURCE_PASSWORD=password
-      - SERVER_PORT=8082
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-discovery:8761/eureka/
+      - SERVER_PORT=8082
       - LOGGING_LEVEL_ROOT=DEBUG
       - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_BEANS=DEBUG
       - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_CONTEXT=DEBUG
@@ -94,12 +91,10 @@ services:
     ports:
       - "8181:8080"
     expose:
-      - "8181"
-    environment:
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-discovery:8761/eureka
-      - SERVER_PORT=8181
+      - "8080"
     depends_on:
       - service-discovery
+      - keycloak
     networks:
       - microservices-network
 
